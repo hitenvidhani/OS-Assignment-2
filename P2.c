@@ -29,14 +29,19 @@ typedef struct{
 void *matrixMul(void *args) {
     pair *x = (pair *) args;
     //printf("thread %d : st-%d, ed-%d\n", (x->st)/rpt, x->st, x->ed);
+    
+    //TO CHECK IF ROWS TO BE READ HAVE BEEN WRITTEN
+    // If the last element of a row is -1, then you can't read the row, if it's positive, we can be certain that entire row is read
     int b=0;
     while(b==0) {
         b=1;
         for(int i = x->st; i < x->ed; i++) {
-            if(A[nAcol*i+nAcol]==-1)
+            if(A[nAcol*i+nAcol-1]==-1)
                 b=0;
         }
+        printf("in while loop\n");
     }
+    //CALCULATIONS
     for (int i = x->st; i < x->ed; i++) {
         for (int j = 0; j < nBcol; j++) {
             for (int k = 0; k < nAcol; k++) {
