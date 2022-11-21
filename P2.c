@@ -15,21 +15,12 @@ long long int size_c = 50;
  
 int nArow, nAcol, nBrow, nBcol;
 int rpt;
- 
-// typedef struct{
-// 	int r,c;
-// } pair;
- 
-// int calc1Didx(int r, int c, int col) {
-//     return col*r + c;
-// }
- 
-// pair calc2Didx(int A, int col) {
+
+//      col*r + c;
+
+
 //     int r = A / col;
 //     int c = A % col;
-//     pair ret = {r, c};
-//     return ret;
-// }
  
 typedef struct{
 	int st,ed;
