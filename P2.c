@@ -29,6 +29,14 @@ typedef struct{
 void *matrixMul(void *args) {
     pair *x = (pair *) args;
     //printf("thread %d : st-%d, ed-%d\n", (x->st)/rpt, x->st, x->ed);
+    int b=0;
+    while(b==0) {
+        b=1;
+        for(int i = x->st; i < x->ed; i++) {
+            if(A[nAcol*i+nAcol]==-1)
+                b=0;
+        }
+    }
     for (int i = x->st; i < x->ed; i++) {
         for (int j = 0; j < nBcol; j++) {
             for (int k = 0; k < nAcol; k++) {
@@ -92,6 +100,10 @@ int main(int argc, char *argv[]) {
     //one thread for each column
  
     int num_threads = 90;
+
+    if(num_threads>nArow){
+        num_threads=nArow;
+    }
  
     //num_threads = num_threads > nArow ? nArow : num_threads;
  
