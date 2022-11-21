@@ -4,6 +4,7 @@
 #include <time.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
+#include<string.h>
  
 #define num_threads 1
  
@@ -22,6 +23,7 @@ void *readMatrixRowB(void * args){
 	fp = fopen("in2.txt","r");
 	fseek(fp,start_idxsB[*x],SEEK_CUR);
 	long long int j = 0;
+	memset(matB, -1, dim2*dim3*sizeof(long long int));
 	while (fscanf(fp, "%lld%c", &num, &ch)==2){
             //do something
 			matB[dim3*(*x)+j] = num;
@@ -65,6 +67,7 @@ void readSecond(){
     shmidB = shmget(keyB, dim2*dim3*sizeof(long long int), 0666 | IPC_CREAT);
     //printf("%dabc\n",shmidB);
     matB = (long long int *)shmat(shmidB, (void*)0, 0);
+	printf("hello %lld\n", matB[0]);
     //shared mem end
 	get_start_idxsB();
 	printf("\n");
@@ -125,6 +128,8 @@ void *readMatrixRowA(void * args){
 	fp = fopen("in1.txt","r");
 	fseek(fp,start_idxsA[*x],SEEK_CUR);
 	long long int j = 0;
+	memset(matA, -1, dim2*dim1*sizeof(long long int));
+	//printf("helllo %lld", matA[0]);
 	while (fscanf(fp, "%lld%c", &num, &ch)==2){
             //do something
 			matA[dim2*(*x)+j] = num;
@@ -167,6 +172,7 @@ void readFirst(){
     printf("%d\n",keyA);
     shmidA = shmget(keyA, dim1*dim2*sizeof(long long int), 0666 | IPC_CREAT);
     printf("%dabc\n",shmidA);
+	//memset(matA, -1, dim1*dim2*sizeof(long long int));
     matA = (long long int *)shmat(shmidA, (void*)0, 0);
     //shared mem end
 	get_start_idxsA();
