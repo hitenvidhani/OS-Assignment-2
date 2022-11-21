@@ -5,7 +5,8 @@
 #include <unistd.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
- 
+
+//
 long long int A [20001];
 long long int B [60001];
 long long int C [30001];
