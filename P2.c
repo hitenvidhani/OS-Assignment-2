@@ -31,7 +31,7 @@ key_t keyA;
 key_t keyB;
  
 //int dim1, dim2, dim2, dim3;
-int rpt;
+long long int rpt;
 
 //      col*r + c;
 
@@ -40,13 +40,13 @@ int rpt;
 //     int c = A % col;
  
 typedef struct{
-	int st,ed;
+	long long int st,ed;
 } pair;
 
  
 void *matrixMul(void *args) {
     pair *x = (pair *) args;
-    printf("thread %d : st-%d, ed-%d\n", (x->st)/rpt, x->st, x->ed);
+    printf("thread %lld : st-%lld, ed-%lld\n", (x->st)/rpt, x->st, x->ed);
 
     keyA = ftok(".", 'A');
     //shmidA = shmget(keyA, dim1*dim2*sizeof(long long int), IPC_EXCL);
@@ -69,9 +69,9 @@ void *matrixMul(void *args) {
     // }
     //CALCULATIONS
     printf("%lld\ndebug\n", matA[0]);
-    for (int i = x->st; i < x->ed; i++) {
-        for (int j = 0; j < dim3; j++) { //dim 3
-            for (int k = 0; k < dim2; k++) { // dim 2
+    for (long long int i = x->st; i < x->ed; i++) {
+        for (long long int j = 0; j < dim3; j++) { //dim 3
+            for (long long int k = 0; k < dim2; k++) { // dim 2
                 matC[dim3*i+j] += matA[dim2*i+k] * matB[dim3*k+j]; //      g += 
                 // printf("A in i : %d,  j : %d , k : %d is : %lld\n", i, j, k,  A[dim2*i+k]);
                 // printf("B in i : %d,  j : %d , k : %d is : %lld\n", i, j, k,  B[dim2*i+k]);
@@ -164,8 +164,8 @@ int main(int argc, char *argv[]) {
     }
     printf("\n");
     printf("BBBBBBBBBBBBBBBBBB\n");
-    for (int i = 0; i < dim2; i++) {
-        for (int j = 0; j < dim3; j++) {
+    for (long long int i = 0; i < dim2; i++) {
+        for (long long int j = 0; j < dim3; j++) {
             printf("%lld ", matB[i*dim3+j]);
         }
         printf("\n");
@@ -196,40 +196,40 @@ int main(int argc, char *argv[]) {
     //num threads = 2, dim1s = 5
     // 10 threads x 4 rows and 20 threads x 3 rows
  
-    for(int l = 0 ; l<rem ; l++) { //
+    for(long long int l = 0 ; l<rem ; l++) { //
         //INITIALIZE ARRAY OF ARG BEFORE HAND?
         pair * arg = (pair *) malloc(sizeof(pair));
         arg->st = l * ceil_rpt;
         arg->ed = (l+1) * ceil_rpt;
-        printf("in main 1 : thread %d : st-%d, ed-%d\n", l, arg->st, arg->ed);
+        printf("in main 1 : thread %lld : st-%lld, ed-%lld\n", l, arg->st, arg->ed);
         pthread_create(&threads[l], NULL, matrixMul, (void *) arg);
     }
 
     printf("ceil %lld\n", rem*ceil_rpt);
     printf("l lim %lld\n", num_threads-rem);
-    for(int l = rem; l<num_threads; l++) {
+    for(long long int l = rem; l<num_threads; l++) {
         pair * arg = (pair *) malloc(sizeof(pair));
         arg->st = l * flr_rpt + rem * (ceil_rpt-flr_rpt);
         arg->ed = (l+1) * flr_rpt + rem * (ceil_rpt-flr_rpt);
-        printf("in main 2 : thread %d : st-%d, ed-%d\n", l, arg->st, arg->ed);
+        printf("in main 2 : thread %lld : st-%lld, ed-%lld\n", l, arg->st, arg->ed);
         pthread_create(&threads[l], NULL, matrixMul, (void *) arg);
     }
 
  
-    for (int i = 0; i < num_threads; i++) {
+    for (long long int i = 0; i < num_threads; i++) {
         pthread_join(threads[i], NULL);
     }
     
-    for (int i = 0; i < dim1; i++) {
-        for (int j = 0; j < dim3; j++)
+    for (long long int i = 0; i < dim1; i++) {
+        for (long long int j = 0; j < dim3; j++)
             printf("%lld ", matC[i*dim3+j]);
         printf("\n");
     }
  
     FILE *opfile;
     opfile = fopen("output.txt", "w");
-    for (int i = 0; i < dim1; i++) {
-        for (int j = 0; j < dim3; j++) {
+    for (long long int i = 0; i < dim1; i++) {
+        for (long long int j = 0; j < dim3; j++) {
             fprintf(opfile, "%lld ", matC[i*dim3+j]);
         }
         fputc('\n', opfile);
@@ -242,7 +242,7 @@ int main(int argc, char *argv[]) {
  
     printf("The elapsed time is %ld seconds and %ld micros\n", seconds, micros);
     
-    // shmdt((void *) matA);
-    // shmdt((void *) matB);
+    shmdt((void *) matA);
+    shmdt((void *) matB);
 	return 0;
 }
