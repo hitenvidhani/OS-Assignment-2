@@ -54,33 +54,69 @@ void *matrixMul(void *args) {
  
 int main(int argc, char *argv[]) {
 
-    int shmid;
-    long long int *matA;
-    long long count = size_r * size_c;
-    //long long int i = 0;
-    key_t key = ftok(".", 'c');
+    // int shmid;
+    // long long int *matA;
+    // long long count = size_r * size_c;
+    // //long long int i = 0;
+    // key_t key = ftok(".", 'c');
 
-    shmid = shmget(key, count*sizeof(long long int), IPC_EXCL);
+    // shmid = shmget(key, count*sizeof(long long int), IPC_EXCL);
 
-    matA = shmat(shmid, 0, SHM_RDONLY);
-    printf("hello %lld hello2 %lld \n", matA[0], matA[1]);
-    shmdt((void *) matA);
-    shmctl(shmid, IPC_RMID, NULL);
+    // matA = shmat(shmid, 0, SHM_RDONLY);
+    // printf("hello %lld hello2 %lld \n", matA[0], matA[1]);
+    // shmdt((void *) matA);
+    // shmctl(shmid, IPC_RMID, NULL);
+
+
  
     struct timeval start, end;
     gettimeofday(&start, NULL);
  
-    nArow = 100;
-    nAcol = 200;
-    nBrow = 200;
-    nBcol = 300;
+    nArow = 20;
+    nAcol = 50;
+    nBrow = 50;
+    nBcol = 20;
  
-    for(int i=0;i<nAcol*nArow;i++)
-        A[i]=i+1;
+    // for(int i=0;i<nAcol*nArow;i++)
+    //     A[i]=i+1;
  
-    for(int i=0;i<nBcol*nBrow;i++)
-        B[i]=i+1;
+    // for(int i=0;i<nBcol*nBrow;i++)
+    //     B[i]=i+1;
     
+    FILE *inpfile;
+    inpfile = fopen("in1.txt", "r");
+    long long int num;
+    char ch;
+    long long int j=0;
+    for(int x=0;x<nArow;x++) {
+        j=0;
+        while (fscanf(inpfile, "%lld%c", &num, &ch)==2){
+            //do something
+			A[nAcol*(x)+j] = num;
+			printf("%lld ",num);
+            if(ch == '\n')
+                break;
+	    	j++;
+        }
+        printf("\n");
+    }
+ 
+    FILE *inpfile1;
+    inpfile1 = fopen("in2.txt", "r");
+    j=0;
+    for(int x=0;x<nBrow;x++) {
+        j=0;
+        while (fscanf(inpfile1, "%lld%c", &num, &ch)==2){
+            //do something
+			B[nBcol*(x)+j] = num;
+			printf("%lld ",num);
+            if(ch == '\n')
+                break;
+	    	j++;
+        }
+        printf("\n");
+    }
+
     for (int i = 0; i < nArow; i++) {
         for (int j = 0; j < nAcol; j++) {
             printf("%lld ", A[i*nAcol+j]);
