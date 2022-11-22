@@ -31,7 +31,7 @@ void *matrixMul(void *args) {
     //printf("thread %d : st-%d, ed-%d\n", (x->st)/rpt, x->st, x->ed);
     
     //TO CHECK IF ROWS TO BE READ HAVE BEEN WRITTEN
-    // If the last element of a row is -1, then you can't read the row, if it's positive, we can be certain that entire row is read
+    //If the last element of a row is -1, then you can't read the row, if it's positive, we can be certain that entire row is read
     int b=0;
     while(b==0) {
         b=1;
@@ -104,7 +104,7 @@ int main(int argc, char *argv[]) {
  
     //one thread for each column
  
-    int num_threads = 90;
+    int num_threads = 15;
 
     if(num_threads>nArow){
         num_threads=nArow;
@@ -112,7 +112,7 @@ int main(int argc, char *argv[]) {
  
     //num_threads = num_threads > nArow ? nArow : num_threads;
  
-    rpt = nArow / (num_threads-1); // rows per thread
+    rpt = (nArow / num_threads) + 1; // rows per thread
  
     for(int l = 0; l<num_threads-1;l++) {
         // for (int i = l * rpt; i < (l+1) * rpt; i++) {
