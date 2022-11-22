@@ -6,6 +6,8 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include<string.h>
+#include <unistd.h>
+#include <signal.h>
 
 // int to long long int
 // get all the matrices from shared memory so you can access using indexes
@@ -48,26 +50,27 @@ void *matrixMul(void *args) {
     pair *x = (pair *) args;
     printf("thread %lld : st-%lld, ed-%lld\n", (x->st)/rpt, x->st, x->ed);
 
+    keyB = ftok(".", 'B');
+    //shmidB = shmget(keyB, dim3*dim2*sizeof(long long int), IPC_EXCL);
+    matB = shmat(shmidB, 0, SHM_RDONLY);
+
     keyA = ftok(".", 'A');
     //shmidA = shmget(keyA, dim1*dim2*sizeof(long long int), IPC_EXCL);
     matA = shmat(shmidA, 0, SHM_RDONLY);
 
-    keyB = ftok(".", 'B');
-    //shmidB = shmget(keyB, dim3*dim2*sizeof(long long int), IPC_EXCL);
-    matB = shmat(shmidB, 0, SHM_RDONLY);
     
-    //TO CHECK IF ROWS TO BE READ HAVE BEEN WRITTEN
-    //If the last element of a row is -1, then you can't read the row, if it's positive, we can be certain that entire row is read
-    // int b=0;
-    // while(b==0) {
-    //     b=1;
-    //     for(int i = x->st; i < x->ed; i++) {
-    //         if(A[dim2*i+dim2-1]==-1)
-    //             b=0;
-    //     }
-    //     printf("in while loop\n");
-    // }
-    //CALCULATIONS
+    // TO CHECK IF ROWS TO BE READ HAVE BEEN WRITTEN
+    // If the last element of a row is -1, then you can't read the row, if it's positive, we can be certain that entire row is read
+    int b=0;
+    while(b==0) {
+        b=1;
+        for(long long int i = x->st; i < x->ed; i++) {
+            if(matA[dim2*i+dim2-1]==-1)
+                b=0;
+        }
+        printf("in while loop\n");
+    }
+    // CALCULATIONS
     printf("%lld\ndebug\n", matA[0]);
     for (long long int i = x->st; i < x->ed; i++) {
         for (long long int j = 0; j < dim3; j++) { //dim 3
@@ -94,17 +97,17 @@ int main(int argc, char *argv[]) {
     matC = (long long int *)malloc(sizeof(long long int)* dim1 * dim3);
     memset(matC, 0, dim1*dim3*sizeof(long long int));
 
+    keyB = ftok(".", 'B');
+    shmidB = shmget(keyB, dim3*dim2*sizeof(long long int), IPC_EXCL);
+    matB = shmat(shmidB, 0, SHM_RDONLY);
+    printf("hello %lld hello2 %lld \n", matB[10], matB[20]);
+
     keyA = ftok(".", 'A');
     shmidA = shmget(keyA, dim1*dim2*sizeof(long long int), IPC_EXCL);
     matA = shmat(shmidA, 0, SHM_RDONLY);
     printf("hello %lld hello2 %lld \n", matA[10], matA[20]);
     
     //shmctl(shmidA, IPC_RMID, NULL);
-
-    key_t keyB = ftok(".", 'B');
-    shmidB = shmget(keyB, dim3*dim2*sizeof(long long int), IPC_EXCL);
-    matB = shmat(shmidB, 0, SHM_RDONLY);
-    printf("hello %lld hello2 %lld \n", matB[10], matB[20]);
     
     //shmctl(shmidB, IPC_RMID, NULL);
 
@@ -154,6 +157,16 @@ int main(int argc, char *argv[]) {
     // }
     // fclose(inpfile);
     
+    long long int b=0;
+    while(b==0) {
+        b=1;
+        for(long long int i = 0; i < dim2; i++) {
+            if(matB[dim2*i+dim2-1]==-1)
+                b=0;
+        }
+        printf("in while loop\n");
+    }
+
     printf("AAAAAAAAAAAAAAAAAA\n");
     for (long long int i = 0; i < dim1; i++) {
         for (long long int j = 0; j < dim2; j++) {
@@ -171,14 +184,15 @@ int main(int argc, char *argv[]) {
         printf("\n");
     }
     printf("\n");
- 
+    
+
     //max threads : one thread for each row of C matrix.
     //NOTE: creating one thread for each element will be inefficient 
     pthread_t threads[100];
  
     //one thread for each column
  
-    int num_threads = 3;
+    int num_threads = 10;
 
     if(num_threads>dim1){
         num_threads=dim1;
@@ -244,5 +258,7 @@ int main(int argc, char *argv[]) {
     
     shmdt((void *) matA);
     shmdt((void *) matB);
-	return 0;
+	
+    kill(getppid(), SIGUSR2);
+    return 0;
 }

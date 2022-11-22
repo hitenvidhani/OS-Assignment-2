@@ -1,12 +1,13 @@
 #include <stdio.h>
-#include<pthread.h>
+#include <pthread.h>
 #include <stdlib.h>
 #include <time.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include<string.h>
- 
-#define num_threads 1
+#include <string.h>
+#include <unistd.h>
+#include <signal.h>
+#define num_threads 10
  
 long long int dim1;// = 20;
 long long int dim2;// = 50;
@@ -229,9 +230,10 @@ int main(int argc,char *argv[])
 		printf("Wrong Usage");
 		exit(-1);
 	}
-    dim1 = atoi(argv[1]);
-    dim2 = atoi(argv[2]);
-    dim3 = atoi(argv[3]);
+    dim1 = atoll(argv[1]);
+    dim2 = atoll(argv[2]);
+    dim3 = atoll(argv[3]);
+	printf("%lld %lld %lld",dim1,dim2,dim3);
 	//matA=(long long int *)malloc(dim1*dim2*sizeof(long long int));
     //shared memory stuff
 
@@ -290,5 +292,6 @@ int main(int argc,char *argv[])
 
     
     // shmdt((void *) matA);
+	kill(getppid(), SIGUSR1);
 	return 0;
 }

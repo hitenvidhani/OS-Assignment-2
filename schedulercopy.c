@@ -35,7 +35,8 @@ int main(int argc, char *argv[]) {
     clock_gettime(CLOCK_REALTIME, &start1);
 
     if(ch1 == 0) {
-        if(execlp("./P1.out", "P1.out", NULL) == -1) {
+        printf("started 1\n");
+        if(execlp("./P1.out", "P1.out",argv[1],argv[2],argv[3], NULL) == -1) {
             perror("execlp() for P1 failed");
             return -1;
         }
@@ -101,7 +102,7 @@ int main(int argc, char *argv[]) {
 
         if(ch2 == 0) {
             printf("starting P2\n");
-            if(execlp("./P2.out", "P2.out", NULL) == -1) {
+            if(execlp("./P2.out", "P2.out",argv[1],argv[2],argv[3], NULL) == -1) {
                 perror("execlp() for P1 failed");
                 return -1;
             }
@@ -154,6 +155,7 @@ int main(int argc, char *argv[]) {
                     while(curr.tv_nsec - start2.tv_nsec < 1999999);
                     // code to halt P2 and start P1 again
                     kill(ch2, SIGSTOP);
+                    printf("Stopped 2\n");
                     // printf("2 started: %llds %ldns\n", (long long)start2.tv_sec, start2.tv_nsec);
                     // printf("2 stopped: %llds %ldns\n", (long long)curr.tv_sec, curr.tv_nsec);
                 }
@@ -162,6 +164,7 @@ int main(int argc, char *argv[]) {
                 // if(shmPtrP1[0] == '0') {
                     clock_gettime(CLOCK_REALTIME, &start1);
                     kill(ch1, SIGCONT);
+                    printf("Started 1\n");
                 }
                 
                 // code to halt P1 and start P2 and cycle
@@ -171,6 +174,7 @@ int main(int argc, char *argv[]) {
                     clock_gettime(CLOCK_REALTIME, &curr);
                     } while(curr.tv_nsec - start1.tv_nsec < 1999999); //2000000);//999999999
                     kill(ch1, SIGSTOP);
+                    printf("Stopped 1\n");
                 
                     // printf("1 started: %llds %ldns\n", (long long)start1.tv_sec, start1.tv_nsec);
                     // printf("1 stopped: %llds %ldns\n", (long long)curr.tv_sec, curr.tv_nsec);
@@ -180,6 +184,7 @@ int main(int argc, char *argv[]) {
                 // if(shmPtrP2[0] == '0') {
                     clock_gettime(CLOCK_REALTIME, &start2);
                     kill(ch2, SIGCONT);
+                    printf("Started 2\n");
                 }
             }
             // printf("Ptr1: %c\n", shmPtrP1[0]);
