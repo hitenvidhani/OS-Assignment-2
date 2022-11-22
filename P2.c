@@ -96,15 +96,15 @@ int main(int argc, char *argv[]) {
 
     matC = (long long int *)malloc(sizeof(long long int)* dim1 * dim3);
     memset(matC, 0, dim1*dim3*sizeof(long long int));
-
-    keyB = ftok(".", 'B');
-    shmidB = shmget(keyB, dim3*dim2*sizeof(long long int), IPC_EXCL);
+    keyB = ftok(".", 'D');
+    shmidB = shmget(keyB, (dim3*dim2+1000)*sizeof(long long int), IPC_EXCL);
     matB = shmat(shmidB, 0, SHM_RDONLY);
     printf("hello %lld hello2 %lld \n", matB[10], matB[20]);
 
-    keyA = ftok(".", 'A');
-    shmidA = shmget(keyA, dim1*dim2*sizeof(long long int), IPC_EXCL);
+    keyA = ftok(".", 'C');
+    shmidA = shmget(keyA, (dim1*dim2+1000)*sizeof(long long int), IPC_EXCL);
     matA = shmat(shmidA, 0, SHM_RDONLY);
+    printf("1\n");
     printf("hello %lld hello2 %lld \n", matA[10], matA[20]);
     
     //shmctl(shmidA, IPC_RMID, NULL);
@@ -259,6 +259,6 @@ int main(int argc, char *argv[]) {
     shmdt((void *) matA);
     shmdt((void *) matB);
 	
-    kill(getppid(), SIGUSR2);
+    // kill(getppid(), SIGUSR2);
     return 0;
 }

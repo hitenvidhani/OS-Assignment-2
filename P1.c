@@ -7,6 +7,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <signal.h>
+#include <errno.h>
 #define num_threads 10
  
 long long int dim1;// = 20;
@@ -32,6 +33,7 @@ void *readMatrixRowB(void * args){
                 break;
 			j++;
     }
+	// printf("line %lld\n",j);
 }
  
  
@@ -62,10 +64,10 @@ void get_start_idxsB(){
 void readSecond(){
 
     int shmidB;
-    key_t keyB = ftok(".", 'B');
+    key_t keyB = ftok(".", 'D');
     printf("%d\n",keyB);
-    shmidB = shmget(keyB, dim2*dim3*sizeof(long long int), 0666 | IPC_CREAT);
-    //printf("%dabc\n",shmidB);
+    shmidB = shmget(keyB, (dim2*dim3+1000)*sizeof(long long int), 0666 | IPC_CREAT);
+    printf("%dabc\n",shmidB);
     matB = (long long int *)shmat(shmidB, (void*)0, 0);
 	memset(matB, -1, dim2*dim3*sizeof(long long int));
 	printf("hello %lld\n", matB[0]);
@@ -150,15 +152,18 @@ void get_start_idxsA(){
     char c=getc(fp);
     while(c!=EOF){
     	//printf("%c",getc(fp));
+		// if(i==999)printf("%lld\n\n",start_idxsA[999]);
+		// if(i==1000)printf("haha %lld\n",i);
     	while(c!='\n'){
    		//fseek(fp,1,SEEK_CUR);
             //printf("lolololo");
     		printf("%c",c);
     		c=getc(fp);
     	}
-    	//if(c==EOF)break;
     	start_idxsA[i] = ftell(fp);
+		// if(i==999)printf("%lld\n\n",start_idxsA[999]);
     	i++;
+		// if(c==EOF || i==dim1)break;
     	printf("\n");
     	c = getc(fp);
    }
@@ -168,9 +173,9 @@ void get_start_idxsA(){
 void readFirst(){
  // hello
     int shmidA;
-    key_t keyA = ftok(".", 'A');
+    key_t keyA = ftok(".", 'C');
     printf("%d\n",keyA);
-    shmidA = shmget(keyA, dim1*dim2*sizeof(long long int), 0666 | IPC_CREAT);
+    shmidA = shmget(keyA, (dim1*dim2+1000)*sizeof(long long int), 0666 | IPC_CREAT);
     printf("%dabc\n",shmidA);
     matA = (long long int *)shmat(shmidA, (void*)0, 0);
 	memset(matA, -1, dim2*dim1*sizeof(long long int));
@@ -292,6 +297,6 @@ int main(int argc,char *argv[])
 
     
     // shmdt((void *) matA);
-	kill(getppid(), SIGUSR1);
+	// kill(getppid(), SIGUSR1);
 	return 0;
 }
