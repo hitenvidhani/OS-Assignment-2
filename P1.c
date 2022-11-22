@@ -165,7 +165,7 @@ void get_start_idxsA(){
 }
 
 void readFirst(){
-
+ // hello
     int shmidA;
     key_t keyA = ftok(".", 'A');
     printf("%d\n",keyA);
