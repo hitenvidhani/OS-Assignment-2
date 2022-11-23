@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
     printf("hello %lld hello2 %lld \n", matA[10], matA[20]);
     
     //shmctl(shmidA, IPC_RMID, NULL);
-    
+    //
     //shmctl(shmidB, IPC_RMID, NULL);
 
  
@@ -258,6 +258,8 @@ int main(int argc, char *argv[]) {
     
     shmdt((void *) matA);
     shmdt((void *) matB);
+    shmctl(shmidA, IPC_RMID, NULL);
+    shmctl(shmidB, IPC_RMID, NULL);
 	printf("P2 ends here\n");
     kill(getppid(), SIGUSR2);
     return 0;

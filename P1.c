@@ -8,13 +8,13 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
-#define num_threads 10
  
 long long int dim1;// = 20;
 long long int dim2;// = 50;
 long long int dim3;// = 20;
 long long int *start_idxsA, *start_idxsB;
 long long int *matA, *matB;
+int num_threadsA = 10, num_threadsB = 10;
 // B ka part
 
 void *readMatrixRowB(void * args){
@@ -74,25 +74,25 @@ void readSecond(){
     //shared mem end
 	get_start_idxsB();
 	printf("\n");
-	pthread_t t[num_threads];
-	long long int rpt = dim2/num_threads;
+	pthread_t t[num_threadsB];
+	long long int rpt = dim2/num_threadsB;
 	clock_t time;
     time = clock();
 	for(long long int i = 0; i < rpt; i++){
-		for(long long int j=0;j<num_threads;j++){
+		for(long long int j=0;j<num_threadsB;j++){
 			long long int *arg = malloc(sizeof(long long int));
-			*arg = num_threads*i+j;
+			*arg = num_threadsB*i+j;
 			pthread_create(&t[j],NULL,readMatrixRowB,arg);
 		}
-		for(long long int j =0; j < num_threads; j++){
+		for(long long int j =0; j < num_threadsB; j++){
 			pthread_join(t[j],NULL);
 		}
 	}
-	long long int left_over_rows = dim2%num_threads;
+	long long int left_over_rows = dim2%num_threadsB;
 	
 	for(long long int j=0;j<left_over_rows;j++){
 			long long int *arg = malloc(sizeof(long long int));
-			*arg = num_threads*rpt+j;
+			*arg = num_threadsB*rpt+j;
 			pthread_create(&t[j],NULL,readMatrixRowB,arg);
             //check here if no any work
 	}
@@ -182,25 +182,25 @@ void readFirst(){
     //shared mem end
 	get_start_idxsA();
 	printf("\n");
-	pthread_t t[num_threads];
-	long long int rpt = dim1/num_threads;
+	pthread_t t[num_threadsA];
+	long long int rpt = dim1/num_threadsA;
 	clock_t time;
     time = clock();
 	for(long long int i = 0; i < rpt; i++){
-		for(long long int j=0;j<num_threads;j++){
+		for(long long int j=0;j<num_threadsA;j++){
 			long long int *arg = malloc(sizeof(long long int));
-			*arg = num_threads*i+j;
+			*arg = num_threadsA*i+j;
 			pthread_create(&t[j],NULL,readMatrixRowA,arg);
 		}
-		for(long long int j =0; j < num_threads; j++){
+		for(long long int j =0; j < num_threadsA; j++){
 			pthread_join(t[j],NULL);
 		}
 	}
-	long long int left_over_rows = dim1%num_threads;
+	long long int left_over_rows = dim1%num_threadsA;
 	
 	for(long long int j=0;j<left_over_rows;j++){
 			long long int *arg = malloc(sizeof(long long int));
-			*arg = num_threads*rpt+j;
+			*arg = num_threadsA*rpt+j;
 			pthread_create(&t[j],NULL,readMatrixRowA,arg);
 	}
 	for(long long int j =0; j < left_over_rows; j++){
@@ -242,6 +242,14 @@ int main(int argc,char *argv[])
 	//matA=(long long int *)malloc(dim1*dim2*sizeof(long long int));
     //shared memory stuff
 
+	
+	if(num_threadsA > dim1){
+		num_threadsA = dim1;
+	}
+
+	if(num_threadsB > dim2){
+		num_threadsB = dim2;
+	}
     readSecond();
     readFirst();
     
