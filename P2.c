@@ -68,7 +68,7 @@ void *matrixMul(void *args) {
             if(matA[dim2*i+dim2-1]==-1)
                 b=0;
         }
-        printf("in while loop\n");
+        // printf("in while loop\n");
     }
     // CALCULATIONS
     printf("%lld\ndebug\n", matA[0]);
@@ -164,7 +164,7 @@ int main(int argc, char *argv[]) {
             if(matB[dim2*i+dim2-1]==-1)
                 b=0;
         }
-        printf("in while loop\n");
+        // printf("in while loop\n");
     }
 
     printf("AAAAAAAAAAAAAAAAAA\n");
@@ -258,7 +258,7 @@ int main(int argc, char *argv[]) {
     
     shmdt((void *) matA);
     shmdt((void *) matB);
-	
-    // kill(getppid(), SIGUSR2);
+	printf("P2 ends here\n");
+    kill(getppid(), SIGUSR2);
     return 0;
 }

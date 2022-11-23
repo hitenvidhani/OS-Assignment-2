@@ -297,6 +297,7 @@ int main(int argc,char *argv[])
 
     
     // shmdt((void *) matA);
-	// kill(getppid(), SIGUSR1);
+	printf("P1 ends here\n");
+	kill(getppid(), SIGUSR1);
 	return 0;
 }

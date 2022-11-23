@@ -137,6 +137,13 @@ int main(int argc, char *argv[]) {
             // printf("stopped 2, starting 1\n");
 
             // kill(ch1, SIGCONT);
+            do {
+                clock_gettime(CLOCK_REALTIME, &curr);
+            }
+            while(curr.tv_nsec - start2.tv_nsec < 1999999);
+            // code to halt P2 and start P1 again
+            kill(ch2, SIGSTOP);
+            printf("Stopped 2\n");
 
             while(1) {   //shmPtrP1[0] == '0' | shmPtrP2[0] == '0'
 
@@ -146,27 +153,14 @@ int main(int argc, char *argv[]) {
                 // if(shmPtrP1[0] == '1' && shmPtrP2[0] == '1')
                 if(P1_f == 1 && P2_f == 1)
                     break;
-                
-                if(P2_f == 0) {
-                //if(shmPtrP2[0] == '0') {
-                    do {
-                    clock_gettime(CLOCK_REALTIME, &curr);
-                    }
-                    while(curr.tv_nsec - start2.tv_nsec < 1999999);
-                    // code to halt P2 and start P1 again
-                    kill(ch2, SIGSTOP);
-                    printf("Stopped 2\n");
-                    // printf("2 started: %llds %ldns\n", (long long)start2.tv_sec, start2.tv_nsec);
-                    // printf("2 stopped: %llds %ldns\n", (long long)curr.tv_sec, curr.tv_nsec);
-                }
-
                 if(P1_f == 0) {
                 // if(shmPtrP1[0] == '0') {
                     clock_gettime(CLOCK_REALTIME, &start1);
                     kill(ch1, SIGCONT);
                     printf("Started 1\n");
                 }
-                
+                if(P1_f == 1 && P2_f == 1)
+                    break;
                 // code to halt P1 and start P2 and cycle
                 if(P1_f == 0){
                 // if(shmPtrP1[0] == '0') {
@@ -179,13 +173,31 @@ int main(int argc, char *argv[]) {
                     // printf("1 started: %llds %ldns\n", (long long)start1.tv_sec, start1.tv_nsec);
                     // printf("1 stopped: %llds %ldns\n", (long long)curr.tv_sec, curr.tv_nsec);
                 }
-
+                if(P1_f == 1 && P2_f == 1)
+                    break;
                 if(P2_f == 0) {
                 // if(shmPtrP2[0] == '0') {
                     clock_gettime(CLOCK_REALTIME, &start2);
                     kill(ch2, SIGCONT);
                     printf("Started 2\n");
                 }
+                if(P1_f == 1 && P2_f == 1)
+                    break;
+                if(P2_f == 0) {
+                //if(shmPtrP2[0] == '0') {
+                    do {
+                    clock_gettime(CLOCK_REALTIME, &curr);
+                    }
+                    while(curr.tv_nsec - start2.tv_nsec < 1999999);
+                    // code to halt P2 and start P1 again
+                    kill(ch2, SIGSTOP);
+                    printf("Stopped 2\n");
+                    // printf("2 started: %llds %ldns\n", (long long)start2.tv_sec, start2.tv_nsec);
+                    // printf("2 stopped: %llds %ldns\n", (long long)curr.tv_sec, curr.tv_nsec);
+                }
+                if(P1_f == 1 && P2_f == 1)
+                    break;
+                
             }
             // printf("Ptr1: %c\n", shmPtrP1[0]);
             // printf("Ptr2: %c\n", shmPtrP2[0]);
