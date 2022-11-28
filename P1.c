@@ -14,7 +14,7 @@ long long int dim2;// = 50;
 long long int dim3;// = 20;
 long long int *start_idxsA, *start_idxsB;
 long long int *matA, *matB;
-int num_threadsA = 10, num_threadsB = 10;
+int num_threadsA = 8, num_threadsB = 8;
 // B ka part
 
 void *readMatrixRowB(void * args){
@@ -61,7 +61,7 @@ void get_start_idxsB(){
    printf("\n");
 }
 
-void readSecond(){
+void *readSecond(){
 
     int shmidB;
     key_t keyB = ftok(".", 'D');
@@ -170,7 +170,7 @@ void get_start_idxsA(){
    printf("\n");
 }
 
-void readFirst(){
+void *readFirst(){
  // hello
     int shmidA;
     key_t keyA = ftok(".", 'C');
@@ -250,9 +250,11 @@ int main(int argc,char *argv[])
 	if(num_threadsB > dim2){
 		num_threadsB = dim2;
 	}
-    readSecond();
-    readFirst();
-    
+	pthread_t tr1,tr2;
+	pthread_create(&tr2,NULL,readSecond,NULL);
+	pthread_create(&tr1,NULL,readFirst,NULL);
+	pthread_join(tr2,NULL);
+	pthread_join(tr1,NULL);
     // int shmid;
     // key_t key = ftok(".", 'c');
     // printf("%d\n",key);
