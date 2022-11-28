@@ -8,7 +8,9 @@
 #include <unistd.h>
 #include <signal.h>
 #include <errno.h>
- 
+
+#define BIL 1000000000LL
+#define MIL 1000000LL
 long long int dim1;// = 20;
 long long int dim2;// = 50;
 long long int dim3;// = 20;
@@ -17,7 +19,21 @@ long long int *matA, *matB;
 int num_threadsA = 8, num_threadsB = 8;
 char* inputfile1,*inputfile2,*outputfile;
 // B ka part
+struct timespec calcTimeDiff(struct timespec end, struct timespec start) {
+    struct timespec diff;
 
+    if(end.tv_nsec >= start.tv_nsec) {
+        diff.tv_nsec = end.tv_nsec - start.tv_nsec;
+        diff.tv_sec = end.tv_sec - start.tv_sec;
+    }
+
+    else {
+        diff.tv_nsec = BIL - start.tv_nsec + end.tv_nsec;
+        diff.tv_sec = end.tv_sec - start.tv_sec - 1;
+    }
+
+    return diff;
+}
 void *readMatrixRowB(void * args){
 	long long int *x = (long long int *) args;
 	//printf("%lld",*x);
@@ -258,11 +274,18 @@ int main(int argc,char *argv[])
 	if(num_threadsB > dim2){
 		num_threadsB = dim2;
 	}
+	struct timespec timestartP1,timeendP1;
+	clock_gettime(CLOCK_REALTIME,&timestartP1);
 	pthread_t tr1,tr2;
 	pthread_create(&tr2,NULL,readSecond,NULL);
 	pthread_create(&tr1,NULL,readFirst,NULL);
 	pthread_join(tr2,NULL);
 	pthread_join(tr1,NULL);
+	clock_gettime(CLOCK_REALTIME,&timeendP1);
+	FILE*timefp;
+	timefp = fopen("datap1.txt","a+");
+	long int time_elapsed = ((timeendP1.tv_sec * BIL + timeendP1.tv_nsec) - (timestartP1.tv_sec * BIL + timestartP1.tv_nsec));
+		fprintf(timefp, "%lld, %lld, %d, %ld\n", dim1, dim2, num_threadsA, time_elapsed);
     // int shmid;
     // key_t key = ftok(".", 'c');
     // printf("%d\n",key);
@@ -316,6 +339,8 @@ int main(int argc,char *argv[])
     
     // shmdt((void *) matA);
 	printf("P1 ends here\n");
-	kill(getppid(), SIGUSR1);
+	if(argc == 7){
+		kill(getppid(), SIGUSR1);
+	}
 	return 0;
 }

@@ -264,6 +264,8 @@ int main(int argc, char *argv[]) {
     shmctl(shmidA, IPC_RMID, NULL);
     shmctl(shmidB, IPC_RMID, NULL);
 	printf("P2 ends here\n");
-    kill(getppid(), SIGUSR2);
+    if(argc == 7){
+     kill(getppid(), SIGUSR2);
+    }
     return 0;
 }
