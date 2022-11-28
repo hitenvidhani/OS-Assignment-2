@@ -64,9 +64,17 @@ int main(int argc, char *argv[]) {
 
     if(ch1 == 0) {
         printf("Starting P1\n");
-        if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3], NULL) == -1) {
-            perror("execlp() for P1 failed");
-            return -1;
+        if(argc == 7){
+            if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6], NULL) == -1) {
+                perror("execlp() for P1 failed");
+                return -1;
+            }
+        }
+        else if(argc == 9){
+            if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], NULL) == -1) {
+                perror("execlp() for P1 failed");
+                return -1;
+            }
         }
     }
 
@@ -140,9 +148,17 @@ int main(int argc, char *argv[]) {
 
         if(ch2 == 0) {
             printf("Starting P2\n");
-            if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3], NULL) == -1) {
-                perror("execlp() for P1 failed");
-                return -1;
+            if(argc==7){
+                if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6], NULL) == -1) {
+                    perror("execlp() for P2 failed");
+                    return -1;
+                }
+            }
+            else if(argc==9){
+                if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6],argv[7],argv[8], NULL) == -1) {
+                    perror("execlp() for P2 failed");
+                    return -1;
+                }
             }
         }
 

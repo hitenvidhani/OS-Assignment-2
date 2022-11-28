@@ -44,7 +44,7 @@ long long int rpt;
 typedef struct{
 	long long int st,ed;
 } pair;
-
+char* inputfile1,*inputfile2,*outputfile;
  
 void *matrixMul(void *args) {
     pair *x = (pair *) args;
@@ -86,14 +86,16 @@ void *matrixMul(void *args) {
  
 int main(int argc, char *argv[]) {
 
-    if (argc != 4) {
-		printf("Wrong Usage");
-		exit(-1);
-	}
+    // if (argc != 4) {
+	// 	printf("Wrong Usage");
+	// 	exit(-1);
+	// }
     dim1 = atoll(argv[1]);
     dim2 = atoll(argv[2]);
     dim3 = atoll(argv[3]);
-
+    inputfile1 = argv[4];
+	inputfile2 = argv[5];
+	outputfile = argv[6];
     matC = (long long int *)malloc(sizeof(long long int)* dim1 * dim3);
     memset(matC, 0, dim1*dim3*sizeof(long long int));
     keyB = ftok(".", 'D');
@@ -188,12 +190,13 @@ int main(int argc, char *argv[]) {
 
     //max threads : one thread for each row of C matrix.
     //NOTE: creating one thread for each element will be inefficient 
-    pthread_t threads[100];
  
     //one thread for each column
  
     int num_threads = 10;
-
+    if(argc==9)num_threads = atoi(argv[8]);
+    printf("num thread p2 %d",num_threads);
+    pthread_t threads[num_threads];
     if(num_threads>dim1){
         num_threads=dim1;
     }
@@ -241,7 +244,7 @@ int main(int argc, char *argv[]) {
     }
  
     FILE *opfile;
-    opfile = fopen("output.txt", "w");
+    opfile = fopen(outputfile, "w");
     for (long long int i = 0; i < dim1; i++) {
         for (long long int j = 0; j < dim3; j++) {
             fprintf(opfile, "%lld ", matC[i*dim3+j]);

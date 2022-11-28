@@ -15,6 +15,7 @@ long long int dim3;// = 20;
 long long int *start_idxsA, *start_idxsB;
 long long int *matA, *matB;
 int num_threadsA = 8, num_threadsB = 8;
+char* inputfile1,*inputfile2,*outputfile;
 // B ka part
 
 void *readMatrixRowB(void * args){
@@ -22,7 +23,7 @@ void *readMatrixRowB(void * args){
 	//printf("%lld",*x);
 	long long int num; char ch;
 	FILE *fp;
-	fp = fopen("in2.txt","r");
+	fp = fopen(inputfile2,"r");
 	fseek(fp,start_idxsB[*x],SEEK_CUR);
 	long long int j = 0;
 	while (fscanf(fp, "%lld%c", &num, &ch)==2){
@@ -41,7 +42,7 @@ void get_start_idxsB(){
     start_idxsB=(long long int *)malloc(dim2*sizeof(long long int));
     start_idxsB[0]=0;
     FILE *fp;
-    fp = fopen("in2.txt","r");
+    fp = fopen(inputfile2,"r");
     long long int i = 1;
     char c=getc(fp);
     while(c!=EOF){
@@ -128,7 +129,7 @@ void *readMatrixRowA(void * args){
 	//printf("%lld",*x);
 	long long int num; char ch;
 	FILE *fp;
-	fp = fopen("in1.txt","r");
+	fp = fopen(inputfile1,"r");
 	fseek(fp,start_idxsA[*x],SEEK_CUR);
 	long long int j = 0;
 	//printf("helllo %lld", matA[0]);
@@ -147,7 +148,7 @@ void get_start_idxsA(){
     start_idxsA=(long long int *)malloc(dim1*sizeof(long long int));
     start_idxsA[0]=0;
     FILE *fp;
-    fp = fopen("in1.txt","r");
+    fp = fopen(inputfile1,"r");
     long long int i = 1;
     char c=getc(fp);
     while(c!=EOF){
@@ -231,14 +232,21 @@ void *readFirst(){
  
 int main(int argc,char *argv[])
 {
-    if (argc != 4) {
-		printf("Wrong Usage");
-		exit(-1);
-	}
+    // if (argc != 4) {
+	// 	printf("Wrong Usage");
+	// 	exit(-1);
+	// }
     dim1 = atoll(argv[1]);
     dim2 = atoll(argv[2]);
     dim3 = atoll(argv[3]);
-	printf("%lld %lld %lld",dim1,dim2,dim3);
+	inputfile1 = argv[4];
+	inputfile2 = argv[5];
+	outputfile = argv[6]; 
+	if(argc==9){
+		num_threadsA = atoi(argv[7]);
+		num_threadsB = atoi(argv[7]);
+	}
+	printf("num thread p1 %d",num_threadsA);
 	//matA=(long long int *)malloc(dim1*dim2*sizeof(long long int));
     //shared memory stuff
 
