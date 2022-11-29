@@ -15,6 +15,26 @@
 //long long int *A; //[20001];
 //long long int *B; //[60001];
 //long long int *C; //[30001]={0};
+
+#define BIL 1000000000LL
+#define MIL 1000000LL
+
+struct timespec calcTimeDiff(struct timespec end, struct timespec start) {
+    struct timespec diff;
+
+    if(end.tv_nsec >= start.tv_nsec) {
+        diff.tv_nsec = end.tv_nsec - start.tv_nsec;
+        diff.tv_sec = end.tv_sec - start.tv_sec;
+    }
+
+    else {
+        diff.tv_nsec = BIL - start.tv_nsec + end.tv_nsec;
+        diff.tv_sec = end.tv_sec - start.tv_sec - 1;
+    }
+
+    return diff;
+}
+
 long long int size_r = 20;
 long long int size_c = 50;
 long long int *matA, *matB, *matC;
@@ -90,12 +110,19 @@ int main(int argc, char *argv[]) {
 	// 	printf("Wrong Usage");
 	// 	exit(-1);
 	// }
+
+    int num_threads = 10;
+
     dim1 = atoll(argv[1]);
     dim2 = atoll(argv[2]);
     dim3 = atoll(argv[3]);
     inputfile1 = argv[4];
 	inputfile2 = argv[5];
 	outputfile = argv[6];
+    if(argc==9)
+        num_threads = atoi(argv[8]);
+
+
     matC = (long long int *)malloc(sizeof(long long int)* dim1 * dim3);
     memset(matC, 0, dim1*dim3*sizeof(long long int));
     keyB = ftok(".", 'D');
@@ -113,51 +140,9 @@ int main(int argc, char *argv[]) {
     //
     //shmctl(shmidB, IPC_RMID, NULL);
 
- 
-    struct timeval start, end;
-    gettimeofday(&start, NULL);
- 
-    //dim1 = 20;
-    //dim2 = dim2 = 50;
-    //dim3 = 20;
- 
-    // for(int i=0;i<dim2*dim1;i++)
-    //     A[i]=i+1;
- 
-    // for(int i=0;i<dim3*dim2;i++)
-    //     B[i]=i+1;
-    // long long int num;
-    // char ch;
-    // long long int j=0;
-    // FILE *inpfile1;
-    // inpfile1 = fopen("in2.txt", "r");
-    // j=0;
-    // for(int x=0;x<dim2;x++) {
-    //     j=0;
-    //     while (fscanf(inpfile1, "%lld%c", &num, &ch)==2){
-    //         //do something
-	// 		B[dim3*x+j] = num;
-    //         if(ch == '\n' | ch==EOF)
-    //             break;
-	//     	j++;
-    //     }
-    // }
-    // fclose(inpfile1);
 
-    // FILE *inpfile;
-    // inpfile = fopen("in1.txt", "r");
-    
-    // for(int x=0;x<dim1;x++) {
-    //     j=0;
-    //     while (fscanf(inpfile, "%lld%c", &num, &ch)==2){
-    //         //do something
-	// 		A[dim2*(x)+j] = num;
-    //         if(ch == '\n')
-    //             break;
-	//     	j++;
-    //     }
-    // }
-    // fclose(inpfile);
+    struct timespec timestartP1,timeendP1;
+    clock_gettime(CLOCK_REALTIME,&timestartP1);
     
     long long int b=0;
     while(b==0) {
@@ -166,26 +151,25 @@ int main(int argc, char *argv[]) {
             if(matB[dim2*i+dim2-1]==-1)
                 b=0;
         }
-        // printf("in while loop\n");
     }
 
-    printf("AAAAAAAAAAAAAAAAAA\n");
-    for (long long int i = 0; i < dim1; i++) {
-        for (long long int j = 0; j < dim2; j++) {
-            //long long int k = matA[i*dim2+j];
-            printf("%lld ", matA[i*dim2+j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
-    printf("BBBBBBBBBBBBBBBBBB\n");
-    for (long long int i = 0; i < dim2; i++) {
-        for (long long int j = 0; j < dim3; j++) {
-            printf("%lld ", matB[i*dim3+j]);
-        }
-        printf("\n");
-    }
-    printf("\n");
+    // printf("AAAAAAAAAAAAAAAAAA\n");
+    // for (long long int i = 0; i < dim1; i++) {
+    //     for (long long int j = 0; j < dim2; j++) {
+    //         //long long int k = matA[i*dim2+j];
+    //         printf("%lld ", matA[i*dim2+j]);
+    //     }
+    //     printf("\n");
+    // }
+    // printf("\n");
+    // printf("BBBBBBBBBBBBBBBBBB\n");
+    // for (long long int i = 0; i < dim2; i++) {
+    //     for (long long int j = 0; j < dim3; j++) {
+    //         printf("%lld ", matB[i*dim3+j]);
+    //     }
+    //     printf("\n");
+    // }
+    // printf("\n");
     
 
     //max threads : one thread for each row of C matrix.
@@ -193,8 +177,6 @@ int main(int argc, char *argv[]) {
  
     //one thread for each column
  
-    int num_threads = 10;
-    if(argc==9)num_threads = atoi(argv[8]);
     printf("num thread p2 %d",num_threads);
     pthread_t threads[num_threads];
     if(num_threads>dim1){
@@ -210,7 +192,7 @@ int main(int argc, char *argv[]) {
 
     long long int rem = dim1 % num_threads; // 1
 
-    //num threads = 2, dim1s = 5
+    //num threads = 30, dim1s = 100
     // 10 threads x 4 rows and 20 threads x 3 rows
  
     for(long long int l = 0 ; l<rem ; l++) { //
@@ -251,13 +233,14 @@ int main(int argc, char *argv[]) {
         }
         fputc('\n', opfile);
     }
- 
-    gettimeofday(&end, NULL);
- 
-    long seconds = (end.tv_sec - start.tv_sec);
-    long micros = ((seconds * 1000000) + end.tv_usec) - (start.tv_usec);
- 
-    printf("The elapsed time is %ld seconds and %ld micros\n", seconds, micros);
+
+    clock_gettime(CLOCK_REALTIME,&timeendP1);
+
+    FILE*timefp2;
+
+    timefp2 = fopen("datap2.csv","a+");
+	long int time_elapsed = ((timeendP1.tv_sec * BIL + timeendP1.tv_nsec) - (timestartP1.tv_sec * BIL + timestartP1.tv_nsec));
+		fprintf(timefp2, "%lld, %lld, %lld, %d, %ld\n", dim1, dim2, dim3, num_threads, time_elapsed);
     
     shmdt((void *) matA);
     shmdt((void *) matB);

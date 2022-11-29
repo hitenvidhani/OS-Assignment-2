@@ -283,9 +283,9 @@ int main(int argc,char *argv[])
 	pthread_join(tr1,NULL);
 	clock_gettime(CLOCK_REALTIME,&timeendP1);
 	FILE*timefp;
-	timefp = fopen("datap1.txt","a+");
+	timefp = fopen("datap1.csv","a+");
 	long int time_elapsed = ((timeendP1.tv_sec * BIL + timeendP1.tv_nsec) - (timestartP1.tv_sec * BIL + timestartP1.tv_nsec));
-		fprintf(timefp, "%lld, %lld, %d, %ld\n", dim1, dim2, num_threadsA, time_elapsed);
+		fprintf(timefp, "%lld, %lld, %lld, %d, %ld\n", dim1, dim2, dim3, num_threadsA, time_elapsed);
     // int shmid;
     // key_t key = ftok(".", 'c');
     // printf("%d\n",key);
