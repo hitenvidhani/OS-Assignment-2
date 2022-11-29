@@ -64,14 +64,14 @@ int main(int argc, char *argv[]) {
 
     if(ch1 == 0) {
         printf("Starting P1\n");
-        if(argc == 7){
+        if(argc == 7) {
             if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6], NULL) == -1) {
                 perror("execlp() for P1 failed");
                 return -1;
             }
         }
-        else if(argc == 9){
-            if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], NULL) == -1) {
+        else if(argc == 9) {
+             if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], NULL) == -1) {
                 perror("execlp() for P1 failed");
                 return -1;
             }
@@ -148,13 +148,13 @@ int main(int argc, char *argv[]) {
 
         if(ch2 == 0) {
             printf("Starting P2\n");
-            if(argc==7){
-                if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6], NULL) == -1) {
+            if(argc == 7) {
+               if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6], NULL) == -1) {
                     perror("execlp() for P2 failed");
                     return -1;
-                }
+                }     
             }
-            else if(argc==9){
+            else if(argc == 9) {
                 if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6],argv[7],argv[8], NULL) == -1) {
                     perror("execlp() for P2 failed");
                     return -1;
@@ -450,6 +450,30 @@ int main(int argc, char *argv[]) {
             printf("No. of times P2 got turn: %d\n", num_r_P2);
             
             printf("No. of Context Switches: %d\n", num_cs);
+
+            long long int totTime, TAT1, TAT2, totTAT, wait12, run12, switch_ovhd;
+
+            totTime = ((F.tv_sec * BIL + F.tv_nsec) - (S1.tv_sec * BIL + S1.tv_nsec));
+            TAT1 = ((E1.tv_sec * BIL + E1.tv_nsec) - (S1.tv_sec * BIL + S1.tv_nsec));
+            TAT2 = ((E2.tv_sec * BIL + E2.tv_nsec) - (S2.tv_sec * BIL + S2.tv_nsec));
+            totTAT = TAT1 + TAT2;
+            wait12 = wait12_ns + (wait12_s * BIL);
+            run12 = run12_ns + (run12_s * BIL);
+            switch_ovhd = totTime - run12;
+
+            if(argc == 7) {
+                FILE *fp = fopen("datasched.csv", "a+");
+
+                fprintf(fp, "%lld, %lld, %lld, %lld, %lld, %lld\n", atoll(argv[1]), atoll(argv[2]), atoll(argv[3]), totTAT, wait12, switch_ovhd);
+                fclose(fp);
+            }
+
+            else if(argc == 9) {
+                FILE *fp = fopen("datasched.csv", "a+");
+
+                fprintf(fp, "%lld, %lld, %lld, %lld, %lld, %lld, %lld, %lld\n", atoll(argv[1]), atoll(argv[2]), atoll(argv[3]), atoll(argv[7]), atoll(argv[8]), totTAT, wait12, switch_ovhd);
+                fclose(fp);
+            }
             // int wait_time1_s = ;
             // int wait_time1_ns = ;
 
