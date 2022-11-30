@@ -236,11 +236,11 @@ int main(int argc, char *argv[]) {
 
     clock_gettime(CLOCK_REALTIME,&timeendP1);
 
-    FILE*timefp2;
+    //FILE*timefp2;
 
-    timefp2 = fopen("datap2.csv","a+");
-	long int time_elapsed = ((timeendP1.tv_sec * BIL + timeendP1.tv_nsec) - (timestartP1.tv_sec * BIL + timestartP1.tv_nsec));
-		fprintf(timefp2, "%lld, %lld, %lld, %d, %ld\n", dim1, dim2, dim3, num_threads, time_elapsed);
+    //timefp2 = fopen("datap2.csv","a+");
+	//long int time_elapsed = ((timeendP1.tv_sec * BIL + timeendP1.tv_nsec) - (timestartP1.tv_sec * BIL + timestartP1.tv_nsec));
+		//fprintf(timefp2, "%lld, %lld, %lld, %d, %ld\n", dim1, dim2, dim3, num_threads, time_elapsed);
     
     shmdt((void *) matA);
     shmdt((void *) matB);
