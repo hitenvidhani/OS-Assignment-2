@@ -44,6 +44,9 @@ void sig_handler2(int signum) {
 
 int main(int argc, char *argv[]) {
 
+
+   // shmctl(shmidA, IPC_RMID, NULL);
+   // shmctl(shmidB, IPC_RMID, NULL);
     signal(SIGUSR1, sig_handler1);
     signal(SIGUSR2, sig_handler2);
 
@@ -52,7 +55,29 @@ int main(int argc, char *argv[]) {
     //     exit(-1);
     // }
 
-    struct timespec start1, start2, curr, F;    //teststart
+    int idA, idB;
+    key_t keyA, keyB;
+    int dim1, dim2, dim3;
+
+    dim1 = atoi(argv[1]);
+    dim2 = atoi(argv[2]);
+    dim3 = atoi(argv[3]);
+
+    keyB = ftok(".", 'D');
+    // printf("%d\n",keyB);
+    idB = shmget(keyB, (dim2*dim3)*sizeof(long long int), 0666 | IPC_CREAT);
+    // printf("%dabc\n",shmidB);
+    // matB = (long long int *)shmat(shmidB, (void*)0, 0);
+	// memset(matB, -1, dim2*dim3*sizeof(long long int));
+
+    keyA = ftok(".", 'C');
+    // printf("%d\n",keyA);
+    idA = shmget(keyA, (dim1*dim2)*sizeof(long long int), 0666 | IPC_CREAT);
+    // printf("%dabc\n",shmidA);
+    // matA = (long long int *)shmat(shmidA, (void*)0, 0);
+	// memset(matA, -1, dim2*dim1*sizeof(long long int));
+
+    struct timespec start1, start2, curr, F, teststart;
 
     int time_quant = 1 * MIL;
 
@@ -64,25 +89,25 @@ int main(int argc, char *argv[]) {
 
     if(ch1 == 0) {
         printf("Starting P1\n");
-        if(argc == 7) {
+        // if(argc == 7) {
             if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6], NULL) == -1) {
                 perror("execlp() for P1 failed");
                 return -1;
             }
-        }
-        else if(argc == 9) {
-             if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], NULL) == -1) {
-                perror("execlp() for P1 failed");
-                return -1;
-            }
-        }
+        // }
+        // else if(argc == 9) {
+        //      if(execlp("./P1.out", "P1.out", argv[1], argv[2], argv[3], argv[4], argv[5], argv[6], argv[7], argv[8], NULL) == -1) {
+        //         perror("execlp() for P1 failed");
+        //         return -1;
+        //     }
+        // }
     }
 
     if(ch1 > 0) {
 
         // clock_gettime(CLOCK_REALTIME, &teststart);
 
-        if(P1_f == 0) {
+        // if(P1_f == 0) {
             do {
                 clock_gettime(CLOCK_REALTIME, &curr);
             }
@@ -97,7 +122,7 @@ int main(int argc, char *argv[]) {
             num_cs++;
             
             printf("Stopped P1\n");
-        }
+        // }
 
         // clock_gettime(CLOCK_REALTIME, &teststart);
 
@@ -109,13 +134,11 @@ int main(int argc, char *argv[]) {
         // setting up reading shared memory for process P1
         key_t keyP1 = ftok("P1.c", 10);
         int shmidP1;
-
         if((shmidP1 = shmget(keyP1, 32, 0)) == -1) {
             printf("\nshmget1() error\n");
             printf("%d", errno);
             exit(1);
         }
-
         char *shmPtrP1 = shmat(shmidP1, (void*)0, 0);
         
         if(shmPtrP1 == (char *) -1) {
@@ -125,10 +148,8 @@ int main(int argc, char *argv[]) {
 */
 /*
         printf("SHM after STOP before CONT: %c\n", shmPtrP1[0]);
-
         kill(ch1, SIGCONT);
         printf("conted\n");
-
         printf("SHM after CONT: %c\n", shmPtrP1[0]);
 */
         // do {
@@ -146,20 +167,27 @@ int main(int argc, char *argv[]) {
         clock_gettime(CLOCK_REALTIME, &S2);
         num_r_P2++;
 
+        clock_gettime(CLOCK_REALTIME, &teststart);
+
+        // do {
+        //     clock_gettime(CLOCK_REALTIME, &curr);
+        // }
+        // while(curr.tv_sec - teststart.tv_sec < 10);//2000000);
+
         if(ch2 == 0) {
             printf("Starting P2\n");
-            if(argc == 7) {
+            // if(argc == 7) {
                if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6], NULL) == -1) {
                     perror("execlp() for P2 failed");
                     return -1;
                 }     
-            }
-            else if(argc == 9) {
-                if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6],argv[7],argv[8], NULL) == -1) {
-                    perror("execlp() for P2 failed");
-                    return -1;
-                }
-            }
+            // }
+            // else if(argc == 9) {
+            //     if(execlp("./P2.out", "P2.out", argv[1], argv[2], argv[3],argv[4], argv[5], argv[6],argv[7],argv[8], NULL) == -1) {
+            //         perror("execlp() for P2 failed");
+            //         return -1;
+            //     }
+            // }
         }
 
         if(ch2 > 0) {
@@ -167,12 +195,10 @@ int main(int argc, char *argv[]) {
             // setting up reading shared memory for process P2
             key_t keyP2 = ftok("P2.c", 10);
             int shmidP2;
-
             if((shmidP2 = shmget(keyP2, 32, 0)) == -1) {
                 printf("\nshmget2() error\n");
                 exit(1);
             }
-
             char *shmPtrP2 = shmat(shmidP2, (void*)0, 0);
             
             if(shmPtrP2 == (char *) -1) {
@@ -193,10 +219,8 @@ int main(int argc, char *argv[]) {
             // kill(ch1, SIGCONT);
 /*
             while(1) {   //shmPtrP1[0] == '0' | shmPtrP2[0] == '0' //1 //waitpid(ch1, NULL, 0) != ch1 || waitpid(ch2, NULL, 0) != ch2
-
                 // printf("Ptr1: %c\n", shmPtrP1[0]);
                 // printf("Ptr2: %c\n", shmPtrP2[0]);
-
                 // if(shmPtrP1[0] == '1' && shmPtrP2[0] == '1')
                 if(P1_f == 1 && P2_f == 1) //if both P1 and P2 have ended
                 // if(waitpid(ch1, NULL, 0) == ch1 && waitpid(ch2, NULL, 0) == ch2)
@@ -214,7 +238,6 @@ int main(int argc, char *argv[]) {
                     // printf("2 started: %llds %ldns\n", (long long)start2.tv_sec, start2.tv_nsec);
                     // printf("2 stopped: %llds %ldns\n", (long long)curr.tv_sec, curr.tv_nsec);
                 }
-
                 // if(waitpid(ch1, NULL, 0) != ch1) {
                 if(P1_f == 0) {
                 // if(shmPtrP1[0] == '0') {
@@ -234,7 +257,6 @@ int main(int argc, char *argv[]) {
                     // printf("1 started: %llds %ldns\n", (long long)start1.tv_sec, start1.tv_nsec);
                     // printf("1 stopped: %llds %ldns\n", (long long)curr.tv_sec, curr.tv_nsec);
                 }
-
                 // if(waitpid(ch2, NULL, 0) != ch2) {
                 if(P2_f == 0) {
                 // if(shmPtrP2[0] == '0') {
@@ -243,7 +265,7 @@ int main(int argc, char *argv[]) {
                 }
             }
             */
-            if(P2_f == 0) {
+            // if(P2_f == 0) {
                 do {
                     clock_gettime(CLOCK_REALTIME, &curr);
                 } while(curr.tv_sec - start2.tv_sec == 0 && curr.tv_nsec - start2.tv_nsec < time_quant);
@@ -260,7 +282,7 @@ int main(int argc, char *argv[]) {
                 printf("Stopped P2\n");
 
                 kill(ch1, SIGSTOP);
-            }
+            // }
 
             while(P1_f == 0 || P2_f == 0) {
             // while(waitpid(ch1, NULL, WNOHANG) == 0 && waitpid(ch2, NULL, WNOHANG) == 0) {   //shmPtrP1[0] == '0' | shmPtrP2[0] == '0' //1 //waitpid(ch1, NULL, 0) != ch1 || waitpid(ch2, NULL, 0) != ch2
@@ -269,7 +291,7 @@ int main(int argc, char *argv[]) {
                 // printf("Ptr2: %c\n", shmPtrP2[0]);
 
                 // if(shmPtrP1[0] == '1' && shmPtrP2[0] == '1')
-                // if(P1_f =?= 1 && P2_f == 1) //if both P1 and P2 have ended
+                // if(P1_f == 1 && P2_f == 1) //if both P1 and P2 have ended
                 // if(waitpid(ch1, NULL, WNOHANG) == ch1 && waitpid(ch2, NULL, WNOHANG) == ch2)
                     // break;
 /*
@@ -367,7 +389,6 @@ int main(int argc, char *argv[]) {
                 // waitpid(ch2, NULL, 0);
                 wait(NULL);
             }
-
             if(waitpid(ch2, NULL, WNOHANG) != 0) {
                 kill(ch1, SIGCONT);
                 // waitpid(ch1, NULL, 0);
@@ -489,6 +510,8 @@ int main(int argc, char *argv[]) {
         }
     // printf("SHM: %c", shmPtrP1[0]);
     // wait(NULL);
+    // shmctl(idA, IPC_RMID, NULL);
+    // shmctl(idB, IPC_RMID, NULL);
     }
 
     return 0;
