@@ -1,7 +1,7 @@
-##Matrix Multiplication with Parallelism
+## Matrix Multiplication with Parallelism
 This repository contains a C program that performs matrix multiplication using parallelism provided by the Linux process and threads libraries. The program consists of three parts: P1, P2, and the scheduler program S.
 
-#P1 - Reading and Timing
+# P1 - Reading and Timing
 P1 is a C program that takes three filenames (in1.txt, in2.txt, and out.txt) as command line arguments. It reads two matrices of arbitrary size from in1.txt and in2.txt, which satisfy the criteria for matrix multiplication. The sizes of the matrices are passed as command line arguments.
 
 P1 spawns multiple threads, varying from 1 to arbitrarily large, to read different parts of the matrices concurrently. The program records the time taken to read the entire file into memory with different numbers of threads, measured at the granularity of nanoseconds. The timing results are then plotted against the number of threads for different input sizes.
