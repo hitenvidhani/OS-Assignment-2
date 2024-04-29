@@ -1,26 +1,26 @@
 # Matrix Multiplication with Parallelism
-This repository contains a C program that performs matrix multiplication using parallelism provided by the Linux process and threads libraries. The program consists of three parts: P1, P2, and the scheduler program S.
+This repository contains a C program that performs matrix multiplication using parallelism provided by the Linux process and threads libraries. The program consists of three parts: reader, multiplier, and the scheduler program S.
 
-## P1 - Reading and Timing
-P1 is a C program that takes three filenames (in1.txt, in2.txt, and out.txt) as command line arguments. It reads two matrices of arbitrary size from in1.txt and in2.txt, which satisfy the criteria for matrix multiplication. The sizes of the matrices are passed as command line arguments.
+## reader - Reading and Timing
+reader is a C program that takes three filenames (in1.txt, in2.txt, and out.txt) as command line arguments. It reads two matrices of arbitrary size from in1.txt and in2.txt, which satisfy the criteria for matrix multiplication. The sizes of the matrices are passed as command line arguments.
 
-P1 spawns multiple threads, varying from 1 to arbitrarily large, to read different parts of the matrices concurrently. The program records the time taken to read the entire file into memory with different numbers of threads, measured at the granularity of nanoseconds. The timing results are then plotted against the number of threads for different input sizes.
+reader spawns multiple threads, varying from 1 to arbitrarily large, to read different parts of the matrices concurrently. The program records the time taken to read the entire file into memory with different numbers of threads, measured at the granularity of nanoseconds. The timing results are then plotted against the number of threads for different input sizes.
 
-To compile and run P1:
-```gcc reader.c -o P1 -pthread```
-```./P1 i j k in1.txt in2.txt out.txt```
+To compile and run reader:
+```gcc reader.c -o reader -pthread```
+```./reader i j k in1.txt in2.txt out.txt```
 
-## P2 - Computing and Timing
-P2 is a C program that uses IPC mechanisms to receive the rows and columns read by P1. Similar to P1, P2 spawns multiple threads, varying from 1 to arbitrarily large, to compute the cells in the product matrix. The program stores the product matrix in the file out.txt.
+## multiplier - Computing and Timing
+multiplier is a C program that uses IPC mechanisms to receive the rows and columns read by reader. Similar to reader, multiplier spawns multiple threads, varying from 1 to arbitrarily large, to compute the cells in the product matrix. The program stores the product matrix in the file out.txt.
 
-P2 also records the time taken to compute the product with different numbers of threads, measured at the granularity of nanoseconds. The timing results are then plotted against the number of threads for different input sizes.
+multiplier also records the time taken to compute the product with different numbers of threads, measured at the granularity of nanoseconds. The timing results are then plotted against the number of threads for different input sizes.
 
-To compile and run P2:
-```gcc multiplier.c -o P2 -pthread```
-```./P2```
+To compile and run multiplier:
+```gcc multiplier.c -o multiplier -pthread```
+```./multiplier```
 
 S - Scheduler Program
-S is a scheduler program that simulates a uniprocessor scheduler. It spawns two child processes that execute P1 and P2, respectively. S uses different scheduling algorithms to manage the execution of the processes:
+S is a scheduler program that simulates a uniprocessor scheduler. It spawns two child processes that execute reader and multiplier, respectively. S uses different scheduling algorithms to manage the execution of the processes:
 
 -Round Robin with time quantum 2 ms
 -Round Robin with time quantum 1 ms
