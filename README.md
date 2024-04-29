@@ -7,7 +7,7 @@ P1 is a C program that takes three filenames (in1.txt, in2.txt, and out.txt) as 
 P1 spawns multiple threads, varying from 1 to arbitrarily large, to read different parts of the matrices concurrently. The program records the time taken to read the entire file into memory with different numbers of threads, measured at the granularity of nanoseconds. The timing results are then plotted against the number of threads for different input sizes.
 
 To compile and run P1:
-```gcc P1.c -o P1 -pthread```
+```gcc reader.c -o P1 -pthread```
 ```./P1 i j k in1.txt in2.txt out.txt```
 
 ## P2 - Computing and Timing
@@ -16,7 +16,7 @@ P2 is a C program that uses IPC mechanisms to receive the rows and columns read 
 P2 also records the time taken to compute the product with different numbers of threads, measured at the granularity of nanoseconds. The timing results are then plotted against the number of threads for different input sizes.
 
 To compile and run P2:
-```gcc P2.c -o P2 -pthread```
+```gcc multiplier.c -o P2 -pthread```
 ```./P2```
 
 S - Scheduler Program
@@ -34,7 +34,7 @@ To compile and run S:
 
 ## Usage
 To run the entire assignment:
-```./groupX_assignment2.out i j k in1.txt in2.txt out.txt```
+```./scheduler.out i j k in1.txt in2.txt out.txt```
 Replace i, j, and k with the appropriate dimensions for the matrices.
 The matrix data for in1.txt and in2.txt should be provided according to the specified dimensions.
 The resulting product matrix will be stored in out.txt.
